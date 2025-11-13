@@ -1,0 +1,56 @@
+Sub Create_Tables()
+
+DoCmd.RunSQL "CREATE TABLE Adherent(" & _
+   "ID INT," & _
+   "ID_Adherent VARCHAR(20) NOT NULL," & _
+   "Nom VARCHAR(40) NOT NULL," & _
+   "Prenom VARCHAR(40) NOT NULL," & _
+   "Mail VARCHAR(50) NOT NULL," & _
+   "Contact VARCHAR(50) NOT NULL," & _
+   "Penalite DECIMAL(15,2) NOT NULL," & _
+   "Nb_Emprunt_Encours INT NOT NULL," & _
+   "PRIMARY KEY(ID)" & _
+");"   
+
+DoCmd.RunSQL "CREATE TABLE Document(" & _
+   "ID_Doc INT," & _
+   "Titre VARCHAR(50) NOT NULL," & _
+   "Auteur VARCHAR(50) NOT NULL," & _
+   "Est_Disponible LOGICAL NOT NULL," & _
+   "PRIMARY KEY(ID_Doc)" & _
+");"   
+
+DoCmd.RunSQL "CREATE TABLE Livre(" & _
+   "Id_livre INT," & _
+   "ISBN VARCHAR(50) NOT NULL," & _
+   "Nombre_page INT NOT NULL," & _
+   "ID_Doc INT NOT NULL," & _
+   "PRIMARY KEY(Id_livre)," & _
+   "UNIQUE(ID_Doc)," & _
+   "FOREIGN KEY(ID_Doc) REFERENCES Document(ID_Doc)" & _
+");"   
+
+DoCmd.RunSQL "CREATE TABLE Magazine(" & _
+   "Id_magazine INT," & _
+   "ISSN VARCHAR(50) NOT NULL," & _
+   "Numero INT NOT NULL," & _
+   "ID_Doc INT NOT NULL," & _
+   "PRIMARY KEY(Id_magazine)," & _
+   "UNIQUE(ID_Doc)," & _
+   "FOREIGN KEY(ID_Doc) REFERENCES Document(ID_Doc)" & _
+");"   
+
+DoCmd.RunSQL "CREATE TABLE Emprunt(" & _
+   "ID_Emprunt INT," & _
+   "Date_Emprunt DATE NOT NULL," & _
+   "Date_RetourPrevue DATE NOT NULL," & _
+   "Date_RetourReelle DATE NOT NULL," & _
+   "Statut_Emprunt LOGICAL NOT NULL," & _
+   "ID_Doc INT NOT NULL," & _
+   "ID INT NOT NULL," & _
+   "PRIMARY KEY(ID_Emprunt)," & _
+   "FOREIGN KEY(ID_Doc) REFERENCES Document(ID_Doc)," & _
+   "FOREIGN KEY(ID) REFERENCES Adherent(ID)" & _
+");"   
+
+End Sub
