@@ -1,26 +1,33 @@
 package sgeb.dao;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.Statement;
 
 public class InitDatabase {
+
     public static void init() {
-        String sql = """
-            CREATE TABLE IF NOT EXISTS documents (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                titre TEXT NOT NULL,
-                contenu TEXT,
-                auteur TEXT,
-                date_creation TEXT
-            );
-            """;
-        try (Connection conn = SQLiteConnection.getConnection();
-             Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
-            System.out.println("Table documents prête !");
+        try {
+            // Lire le fichier SQL
+            String sql = Files.readString(Paths.get("data/Bibliotheque.sql"));
+
+            // Ouvrir la connexion
+            try (Connection conn = SQLiteConnection.getConnection();
+                 Statement stmt = conn.createStatement()) {
+
+                // Découper le fichier en commandes SQL séparées par ;
+                for (String command : sql.split(";")) {
+                    if (!command.trim().isEmpty()) {
+                        stmt.execute(command);
+                    }
+                }
+
+                System.out.println("Tables Adhérents, Emprunts et Catalogue prêtes !");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 }
-
