@@ -13,8 +13,8 @@ public class Magazine extends Document {
     /**
      * Default constructor
      */
-    public Magazine(int id, String titre, String editeur, int numero, String periodicite, String ISSN) {
-        super(id, titre, editeur);
+    public Magazine(String titre, String editeur, int numero, String periodicite, String ISSN) {
+        super(titre, editeur);
         this.numero = numero; 
         this.ISSN = ISSN;
         this.periodicite = periodicite;
