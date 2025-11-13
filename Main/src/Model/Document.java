@@ -16,7 +16,7 @@ public abstract class Document {
     /**
      * 
      */
-    private String auteur;
+    private String editeur;
 
     /**
      * 
@@ -26,6 +26,12 @@ public abstract class Document {
     /**
      * 
      */
+
+    private String genre;
+    /**
+     *
+     */
+  
     private Boolean EstDisponible;
 
     /**
@@ -39,24 +45,27 @@ public abstract class Document {
     public BibliothequeManager BibliothequeManager;
 
     ////////////////Constructeur///////////////
-    public Document(int idDoc,String titre, String auteur) {
+    public Document(int idDoc,String titre, String editeur, String genre) {
         this.titre = titre;
-        this.auteur = auteur; 
+        this.editeur = editeur; 
         this.idDoc = idDoc;
+        this.genre = genre;
         this.EstDisponible = true; // est disponible par défaut à la création 
         }
     ////////// Getter ////////////////
     
     public String getitre(){return titre;}
-    public String getauteur(){return auteur;}
+    public String getEditeur(){return editeur;}
     public int getidDoc(){return idDoc;}
+    public String getGenre(){return genre;}    
     public Boolean getEstDisponible(){return EstDisponible;}
     
     /////////Setter ////////////////
     
     public void settitre(String t){ titre = t;}
-    public void setauteur(String a){auteur = a;}
+    public void setediteur(String e){editeur = e;}
     public void setidDoc(int i){ idDoc = i;}
+    public void setGenre(String g){ genre = g;}
     public void setEstDisponible(Boolean d){EstDisponible = d;}
 
     ///////// abstract method////////////// Sera implémenté dans Livre et Magazine pour trouver le type de livre
@@ -65,6 +74,6 @@ public abstract class Document {
     ////////final method///////////////
     
     public void AddEmpruntDoc(Emprunt e){ List_Emprunt.add(e);}
-    public String toString(){ return "ID : " + idDoc + " ; Titre : " +titre + " ; Auteur : " +auteur + " ; Etat" + (EstDisponible? "Disponible":"Emprunté");  }
+    public String toString(){ return "ID : " + idDoc + " ; Titre : " +titre + " ; Editeur : " +editeur + " ; Genre : " +genre +" ; Etat" + (EstDisponible? "Disponible":"Emprunté");  }
 
 }
