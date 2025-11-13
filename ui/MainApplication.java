@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import sgeb.model.Livre;
+import sgeb.dao.InitDatabase;
 import sgeb.exception.AdherentException;
 import sgeb.exception.DocumentException;
 import sgeb.model.Adherent;
@@ -60,6 +61,7 @@ public class MainApplication extends Application {
 
 
     public static void main(String[] args){
+        InitDatabase.init();
         launch();
 
     }
@@ -365,9 +367,6 @@ public class MainApplication extends Application {
             titreListeAdherents.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
             // AJOUTER UNE TABLEVIEW pour la liste d'adhérents
-            // =========================
-            // TableView des adhérents
-            // =========================
             TableView<Adherent> tableAdherents = new TableView<>();
 
             TableColumn<Adherent, Integer> colID = new TableColumn<>("ID");
@@ -443,7 +442,12 @@ public class MainApplication extends Application {
             btnRetour.setOnAction(retourMenuPrincipal -> {
                 root.setCenter(menuPrincipal);
                 root.setBottom(null); // faire disparaitre le pied de page
-            }); 
+            });
+            
+            
+            btnAjouter.setOnAction(ajoutAdh->{
+                AdherentController.FenetreAjoutAdherent();
+            });
 
 
             piedPage.getChildren().addAll(btnAjouter, btnMaj, btnPenalite, btnAdherentHistorique, btnRetour);
