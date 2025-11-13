@@ -15,7 +15,8 @@ DoCmd.RunSQL "CREATE TABLE Adherent(" & _
 DoCmd.RunSQL "CREATE TABLE Document(" & _
    "ID_Doc INT," & _
    "Titre VARCHAR(50) NOT NULL," & _
-   "Auteur VARCHAR(50) NOT NULL," & _
+   "Type_doc VARCHAR(15) NOT NULL," & _
+   "Editeur VARCHAR(50) NOT NULL," & _
    "Est_Disponible LOGICAL NOT NULL," & _
    "PRIMARY KEY(ID_Doc)" & _
 ");"   
@@ -23,6 +24,7 @@ DoCmd.RunSQL "CREATE TABLE Document(" & _
 DoCmd.RunSQL "CREATE TABLE Livre(" & _
    "Id_livre INT," & _
    "ISBN VARCHAR(50) NOT NULL," & _
+   "Auteur VARCHAR(50) NOT NULL," & _
    "Nombre_page INT NOT NULL," & _
    "ID_Doc INT NOT NULL," & _
    "PRIMARY KEY(Id_livre)," & _
@@ -33,7 +35,8 @@ DoCmd.RunSQL "CREATE TABLE Livre(" & _
 DoCmd.RunSQL "CREATE TABLE Magazine(" & _
    "Id_magazine INT," & _
    "ISSN VARCHAR(50) NOT NULL," & _
-   "Numero INT NOT NULL," & _
+   "Periodicite VARCHAR(50) NOT NULL," & _
+   "Num ro INT NOT NULL," & _
    "ID_Doc INT NOT NULL," & _
    "PRIMARY KEY(Id_magazine)," & _
    "UNIQUE(ID_Doc)," & _
