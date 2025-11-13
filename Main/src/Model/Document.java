@@ -40,10 +40,10 @@ public abstract class Document {
     public BibliothequeManager BibliothequeManager;
 
     ////////////////Constructeur///////////////
-    public Document(int idDoc,String titre, String editeur) {
+    public Document(String titre, String editeur) {
         this.titre = titre;
         this.editeur = editeur; 
-        this.idDoc = idDoc;
+        //this.idDoc = idDoc;
         this.EstDisponible = true; // est disponible par défaut à la création 
         }
     ////////// Getter ////////////////
