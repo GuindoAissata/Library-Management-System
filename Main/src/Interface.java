@@ -1,0 +1,776 @@
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Interface extends Application {
+
+    private TabPane tabPane;
+    
+    //@SuppressWarnings("unchecked")
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("SGEB - Bibliothèque");
+        primaryStage.setMaximized(true);
+        
+        // Créer le layout principal
+        BorderPane layoutPrincipal = new BorderPane(); // BorderPane pour 5 zones : top, bottom, left, right, center
+        layoutPrincipal.setTop(creerEntete());
+        
+        // Créer un tab pane
+        tabPane = new TabPane();
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        
+        // Add tabs
+        tabPane.getTabs().addAll(
+            creerPageDocuments(),
+            createMembersTab(),
+            createBorrowTab(),
+            createReturnTab(),
+            createAlertsTab()
+        );
+        
+        layoutPrincipal.setCenter(tabPane);
+        
+        Scene scene = new Scene(layoutPrincipal);
+        scene.getStylesheets().add(getStylesheet());
+        primaryStage.setScene(scene); // associe scene à primaryStage
+        primaryStage.show(); // afficher la fenetre a l'écran
+    }
+    
+    private VBox creerEntete() {
+        VBox entete = new VBox(); // Verticale box
+        entete.setStyle("-fx-background-color: MIDNIGHTBLUE");
+        entete.setPadding(new Insets(20)); // espacement de 20 px
+        entete.setSpacing(10);
+        
+        Label titre = new Label("Système de Gestion des Emprunts de Bibliothèque");
+        titre.setFont(Font.font("System", FontWeight.BOLD, 30)); // police, gras, 30
+        titre.setTextFill(Color.WHITE);
+        
+        Label soustitre = new Label("Gérez vos documents, adhérents et emprunts efficacement");
+        soustitre.setFont(Font.font("System", 18));
+        soustitre.setTextFill(Color.WHITE);
+        
+        entete.getChildren().addAll(titre, soustitre);
+        return entete;
+    }
+    
+    // ==================== Page document ====================
+    private Tab creerPageDocuments() {
+        Tab tab = new Tab("Gestion des Documents");
+        
+        VBox content = new VBox(15);
+        content.setPadding(new Insets(20));
+        
+        // Title
+        Label titreLabel = new Label("Gestion des Documents");
+        titreLabel.setFont(Font.font("System", FontWeight.BOLD, 20));
+        
+        // Rechercher un document
+        VBox rechercheBox = creerRechercheBox(
+            new String[]{"Titre", "Auteur", "ISBN", "Genre"},
+            "Entrez votre recherche..."
+        );
+        
+        // TableVue pour afficher les documents de la base de données
+        TableView<Document> table = creerTabVueDocuments();
+        
+        // Add document form
+        VBox addForm = creerFormAjoutDocument();
+        
+        content.getChildren().addAll(titreLabel, rechercheBox, table, addForm);
+        
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        tab.setContent(scrollPane);
+        
+        return tab;
+    }
+    
+    private TableView<Document> creerTabVueDocuments() {
+        TableView<Document> table = new TableView<>();
+        
+        TableColumn<Document, String> titreCol = new TableColumn<>("Titre");
+        titreCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+        titreCol.setPrefWidth(250);
+        
+        TableColumn<Document, String> authorCol = new TableColumn<>("Auteur");
+        authorCol.setCellValueFactory(new PropertyValueFactory<>("author"));
+        authorCol.setPrefWidth(200);
+        
+        TableColumn<Document, String> typeCol = new TableColumn<>("Type");
+        typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
+        typeCol.setPrefWidth(100);
+        
+        TableColumn<Document, String> isbnCol = new TableColumn<>("ISBN/ID");
+        isbnCol.setCellValueFactory(new PropertyValueFactory<>("isbn"));
+        isbnCol.setPrefWidth(150);
+        
+        TableColumn<Document, String> statusCol = new TableColumn<>("Statut");
+        statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+        statusCol.setPrefWidth(120);
+        
+        TableColumn<Document, Void> actionsCol = new TableColumn<>("Actions");
+        actionsCol.setPrefWidth(150);
+        actionsCol.setCellFactory(col -> new TableCell<>() {
+            private final Button modifierBtn = new Button("Modifier");
+            private final Button supprimerBtn = new Button("Supprimer");
+            private final HBox pane = new HBox(5, modifierBtn, supprimerBtn);
+            
+            {
+                modifierBtn.setStyle("-fx-background-color: azure; -fx-text-fill: MIDNIGHTBLUE;");
+                supprimerBtn.setStyle("-fx-background-color: lightsalmon; -fx-text-fill: crimson;");
+                pane.setAlignment(Pos.CENTER);
+            }
+            
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : pane);
+            }
+        });
+        
+        table.getColumns().addAll(Arrays.asList(titreCol, authorCol, typeCol, isbnCol, statusCol, actionsCol));
+        
+        // Sample data
+        ObservableList<Document> data = FXCollections.observableArrayList(
+            new Document("Le Seigneur des Anneaux", "J.R.R. Tolkien", "Livre", "978-2-253-11235-1", "Disponible"),
+            new Document("Les Misérables", "Victor Hugo", "Livre", "978-2-07-036343-8", "Emprunté"),
+            new Document("Science & Vie", "Collectif", "Magazine", "SV-2024-11", "Disponible"),
+            new Document("Python Avancé", "Guido van Rossum", "Livre", "978-2-412-08934-1", "Disponible")
+        );
+        table.setItems(data);
+        table.setPrefHeight(300);
+        
+        return table;
+    }
+    
+    private VBox creerFormAjoutDocument() {
+        VBox form = new VBox(10);
+        form.setStyle("-fx-background-color: #f9fafb; -fx-padding: 15; -fx-border-color: #e5e7eb; -fx-border-radius: 5;");
+        
+        Label formTitle = new Label("Ajouter un nouveau document");
+        formTitle.setFont(Font.font("System", FontWeight.BOLD, 14));
+        
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        
+        TextField titleField = new TextField();
+        titleField.setPromptText("Titre");
+        
+        TextField authorField = new TextField();
+        authorField.setPromptText("Auteur");
+        
+        ComboBox<String> typeBox = new ComboBox<>();
+        typeBox.getItems().addAll("Livre", "Magazine", "CD", "DVD");
+        typeBox.setPromptText("Sélectionner type");
+        
+        TextField isbnField = new TextField();
+        isbnField.setPromptText("ISBN/ID");
+        
+        grid.add(titleField, 0, 0);
+        grid.add(authorField, 1, 0);
+        grid.add(typeBox, 2, 0);
+        grid.add(isbnField, 3, 0);
+        
+        Button addBtn = new Button("Ajouter le document");
+        addBtn.setStyle("-fx-background-color: #16a34a; -fx-text-fill: white; -fx-font-weight: bold;");
+        
+        form.getChildren().addAll(formTitle, grid, addBtn);
+        return form;
+    }
+    
+    // ==================== MEMBERS TAB ====================
+    private Tab createMembersTab() {
+        Tab tab = new Tab("Gestion des Adhérents");
+        
+        VBox content = new VBox(15);
+        content.setPadding(new Insets(20));
+        
+        Label titreLabel = new Label("Gestion des Adhérents");
+        titreLabel.setFont(Font.font("System", FontWeight.BOLD, 20));
+        
+        VBox searchBox = creerRechercheBox(
+            new String[]{"Nom", "ID Adhérent"},
+            "Entrez le nom ou l'ID..."
+        );
+        
+        TableView<Member> table = createMembersTable();
+        VBox addForm = createAddMemberForm();
+        
+        content.getChildren().addAll(titreLabel, searchBox, table, addForm);
+        
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        tab.setContent(scrollPane);
+        
+        return tab;
+    }
+    
+    private TableView<Member> createMembersTable() {
+        TableView<Member> table = new TableView<>();
+        
+        TableColumn<Member, String> idCol = new TableColumn<>("ID Adhérent");
+        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        idCol.setPrefWidth(120);
+        
+        TableColumn<Member, String> lastNameCol = new TableColumn<>("Nom");
+        lastNameCol.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        lastNameCol.setPrefWidth(150);
+        
+        TableColumn<Member, String> firstNameCol = new TableColumn<>("Prénom");
+        firstNameCol.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        firstNameCol.setPrefWidth(150);
+        
+        TableColumn<Member, String> contactCol = new TableColumn<>("Contact");
+        contactCol.setCellValueFactory(new PropertyValueFactory<>("contact"));
+        contactCol.setPrefWidth(200);
+        
+        TableColumn<Member, String> penaltyCol = new TableColumn<>("Statut Pénalité");
+        penaltyCol.setCellValueFactory(new PropertyValueFactory<>("penalty"));
+        penaltyCol.setPrefWidth(150);
+        
+        TableColumn<Member, Void> actionsCol = new TableColumn<>("Actions");
+        actionsCol.setPrefWidth(200);
+        actionsCol.setCellFactory(col -> new TableCell<>() {
+            private final Button historyBtn = new Button("Historique");
+            private final Button modifierBtn = new Button("Modifier");
+            private final HBox pane = new HBox(5, historyBtn, modifierBtn);
+            
+            {
+                historyBtn.setStyle("-fx-background-color: azure; -fx-text-fill: MIDNIGHTBLUE;");
+                modifierBtn.setStyle("-fx-background-color: azure; -fx-text-fill: MIDNIGHTBLUE;");
+                pane.setAlignment(Pos.CENTER);
+            }
+            
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : pane);
+            }
+        });
+        
+        table.getColumns().addAll(Arrays.asList(idCol, lastNameCol, firstNameCol, contactCol, penaltyCol, actionsCol));
+        
+        ObservableList<Member> data = FXCollections.observableArrayList(
+            new Member("A001", "Dupont", "Jean", "jean@example.com", "Aucune"),
+            new Member("A002", "Martin", "Marie", "marie@example.com", "Aucune"),
+            new Member("A003", "Bernard", "Pierre", "pierre@example.com", "2 jours de retard")
+        );
+        table.setItems(data);
+        table.setPrefHeight(300);
+        
+        return table;
+    }
+    
+    private VBox createAddMemberForm() {
+        VBox form = new VBox(10);
+        form.setStyle("-fx-background-color: #f9fafb; -fx-padding: 15; -fx-border-color: #e5e7eb; -fx-border-radius: 5;");
+        
+        Label formTitle = new Label("Inscrire un nouvel adhérent");
+        formTitle.setFont(Font.font("System", FontWeight.BOLD, 14));
+        
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        
+        TextField lastNameField = new TextField();
+        lastNameField.setPromptText("Nom");
+        
+        TextField firstNameField = new TextField();
+        firstNameField.setPromptText("Prénom");
+        
+        TextField emailField = new TextField();
+        emailField.setPromptText("Email");
+        
+        TextField phoneField = new TextField();
+        phoneField.setPromptText("Téléphone");
+        
+        grid.add(lastNameField, 0, 0);
+        grid.add(firstNameField, 1, 0);
+        grid.add(emailField, 2, 0);
+        grid.add(phoneField, 3, 0);
+        
+        Button addBtn = new Button("Inscrire l'adhérent");
+        addBtn.setStyle("-fx-background-color: #16a34a; -fx-text-fill: white; -fx-font-weight: bold;");
+        
+        form.getChildren().addAll(formTitle, grid, addBtn);
+        return form;
+    }
+    
+    // ==================== BORROW TAB ====================
+    private Tab createBorrowTab() {
+        Tab tab = new Tab("Nouveaux Emprunts");
+        
+        VBox content = new VBox(15);
+        content.setPadding(new Insets(20));
+        
+        Label titreLabel = new Label("Enregistrer un nouvel emprunt");
+        titreLabel.setFont(Font.font("System", FontWeight.BOLD, 20));
+        
+        VBox memberSection = createMemberSelectionSection();
+        VBox documentSection = createDocumentSelectionSection();
+        VBox summarySection = createLoanSummarySection();
+        
+        HBox buttons = new HBox(10);
+        buttons.setAlignment(Pos.CENTER_RIGHT);
+        Button cancelBtn = new Button("Annuler");
+        cancelBtn.setStyle("-fx-background-color: white; -fx-border-color: #d1d5db;");
+        Button saveBtn = new Button("Enregistrer l'Emprunt");
+        saveBtn.setStyle("-fx-background-color: #16a34a; -fx-text-fill: white; -fx-font-weight: bold;");
+        buttons.getChildren().addAll(cancelBtn, saveBtn);
+        
+        content.getChildren().addAll(titreLabel, memberSection, documentSection, summarySection, buttons);
+        
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        tab.setContent(scrollPane);
+        
+        return tab;
+    }
+    
+    private VBox createMemberSelectionSection() {
+        VBox section = new VBox(10);
+        section.setStyle("-fx-background-color: #f9fafb; -fx-padding: 15; -fx-border-color: #e5e7eb; -fx-border-radius: 5;");
+        
+        Label title = new Label("Sélection de l'Adhérent");
+        title.setFont(Font.font("System", FontWeight.BOLD, 14));
+        
+        HBox searchBar = new HBox(10);
+        TextField searchField = new TextField();
+        searchField.setPromptText("Rechercher par ID ou Nom...");
+        searchField.setPrefWidth(400);
+        Button searchBtn = new Button("Rechercher");
+        searchBtn.setStyle("-fx-background-color: MIDNIGHTBLUE; -fx-text-fill: white;");
+        searchBar.getChildren().addAll(searchField, searchBtn);
+        
+        GridPane info = new GridPane();
+        info.setHgap(20);
+        info.setVgap(10);
+        info.setStyle("-fx-background-color: white; -fx-padding: 15; -fx-border-color: #e5e7eb; -fx-border-radius: 5;");
+        
+        info.add(createInfoLabel("ID :", "-"), 0, 0);
+        info.add(createInfoLabel("Nom/Prénom :", "-"), 1, 0);
+        info.add(createInfoLabel("Emprunts actuels :", "0/5"), 2, 0);
+        info.add(createInfoLabel("Statut Pénalité :", "Aucune"), 3, 0);
+        
+        section.getChildren().addAll(title, searchBar, info);
+        return section;
+    }
+    
+    private VBox createDocumentSelectionSection() {
+        VBox section = new VBox(10);
+        section.setStyle("-fx-background-color: #f9fafb; -fx-padding: 15; -fx-border-color: #e5e7eb; -fx-border-radius: 5;");
+        
+        Label title = new Label("Sélection du Document");
+        title.setFont(Font.font("System", FontWeight.BOLD, 14));
+        
+        HBox searchBar = new HBox(10);
+        TextField searchField = new TextField();
+        searchField.setPromptText("Rechercher par Titre ou ISBN...");
+        searchField.setPrefWidth(400);
+        Button searchBtn = new Button("Rechercher");
+        searchBtn.setStyle("-fx-background-color: MIDNIGHTBLUE; -fx-text-fill: white;");
+        searchBar.getChildren().addAll(searchField, searchBtn);
+        
+        GridPane info = new GridPane();
+        info.setHgap(20);
+        info.setVgap(10);
+        info.setStyle("-fx-background-color: white; -fx-padding: 15; -fx-border-color: #e5e7eb; -fx-border-radius: 5;");
+        
+        info.add(createInfoLabel("Titre :", "-"), 0, 0);
+        info.add(createInfoLabel("Auteur :", "-"), 1, 0);
+        info.add(createInfoLabel("Type :", "-"), 2, 0);
+        info.add(createInfoLabel("Statut :", "Disponible"), 3, 0);
+        
+        section.getChildren().addAll(title, searchBar, info);
+        return section;
+    }
+    
+    private VBox createLoanSummarySection() {
+        VBox section = new VBox(10);
+        section.setStyle("-fx-background-color: azure; -fx-padding: 15; -fx-border-color: #60a5fa; -fx-border-radius: 5;");
+        
+        Label title = new Label("Résumé de l'Emprunt");
+        title.setFont(Font.font("System", FontWeight.BOLD, 14));
+        
+        GridPane info = new GridPane();
+        info.setHgap(20);
+        info.setVgap(10);
+        
+        info.add(createInfoLabel("Document :", "-"), 0, 0);
+        info.add(createInfoLabel("Adhérent :", "-"), 1, 0);
+        info.add(createInfoLabel("Date d'emprunt :", "-"), 2, 0);
+        info.add(createInfoLabel("Retour prévu :", "-"), 3, 0);
+        
+        section.getChildren().addAll(title, info);
+        return section;
+    }
+    
+    // ==================== RETURN TAB ====================
+    private Tab createReturnTab() {
+        Tab tab = new Tab("Enregistrer un retour");
+        
+        VBox content = new VBox(15);
+        content.setPadding(new Insets(20));
+        
+        Label titreLabel = new Label("↩ Enregistrer un retour");
+        titreLabel.setFont(Font.font("System", FontWeight.BOLD, 20));
+        
+        HBox searchBar = new HBox(10);
+        TextField searchField = new TextField();
+        searchField.setPromptText("ID Emprunt ou Adhérent...");
+        searchField.setPrefWidth(400);
+        Button searchBtn = new Button("Rechercher");
+        searchBtn.setStyle("-fx-background-color: MIDNIGHTBLUE; -fx-text-fill: white;");
+        searchBar.getChildren().addAll(searchField, searchBtn);
+        
+        TableView<Borrowing> table = createBorrowingsTable();
+        VBox returnForm = createReturnForm();
+        
+        VBox penaltyBox = new VBox(5);
+        penaltyBox.setStyle("-fx-background-color: #fef2f2; -fx-padding: 15; -fx-border-color: #ef4444; -fx-border-width: 0 0 0 4;");
+        Label penaltyLabel = new Label("Pénalité Calculée");
+        penaltyLabel.setFont(Font.font("System", 12));
+        Label penaltyAmount = new Label("0,00 €");
+        penaltyAmount.setFont(Font.font("System", FontWeight.BOLD, 24));
+        penaltyAmount.setTextFill(Color.RED);
+        Label penaltyNote = new Label("À payer si retard");
+        penaltyNote.setFont(Font.font("System", 10));
+        penaltyBox.getChildren().addAll(penaltyLabel, penaltyAmount, penaltyNote);
+        
+        HBox buttons = new HBox(10);
+        buttons.setAlignment(Pos.CENTER_RIGHT);
+        Button cancelBtn = new Button("Annuler");
+        cancelBtn.setStyle("-fx-background-color: white; -fx-border-color: #d1d5db;");
+        Button saveBtn = new Button("Enregistrer le Retour");
+        saveBtn.setStyle("-fx-background-color: #16a34a; -fx-text-fill: white; -fx-font-weight: bold;");
+        buttons.getChildren().addAll(cancelBtn, saveBtn);
+        
+        content.getChildren().addAll(titreLabel, searchBar, table, returnForm, penaltyBox, buttons);
+        
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        tab.setContent(scrollPane);
+        
+        return tab;
+    }
+    
+    private TableView<Borrowing> createBorrowingsTable() {
+        TableView<Borrowing> table = new TableView<>();
+        
+        TableColumn<Borrowing, String> idCol = new TableColumn<>("ID Emprunt");
+        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        
+        TableColumn<Borrowing, String> docCol = new TableColumn<>("Document");
+        docCol.setCellValueFactory(new PropertyValueFactory<>("document"));
+        docCol.setPrefWidth(200);
+        
+        TableColumn<Borrowing, String> memberCol = new TableColumn<>("Adhérent");
+        memberCol.setCellValueFactory(new PropertyValueFactory<>("member"));
+        memberCol.setPrefWidth(150);
+        
+        TableColumn<Borrowing, String> borrowDateCol = new TableColumn<>("Date Emprunt");
+        borrowDateCol.setCellValueFactory(new PropertyValueFactory<>("borrowDate"));
+        
+        TableColumn<Borrowing, String> dueDateCol = new TableColumn<>("Date Retour Prévue");
+        dueDateCol.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
+        
+        table.getColumns().addAll(Arrays.asList(idCol, docCol, memberCol, borrowDateCol, dueDateCol));
+        
+        ObservableList<Borrowing> data = FXCollections.observableArrayList(
+            new Borrowing("E001", "Le Seigneur des Anneaux", "Jean Dupont", "2024-10-15", "2024-11-05"),
+            new Borrowing("E002", "Python Avancé", "Marie Martin", "2024-10-20", "2024-11-10")
+        );
+        table.setItems(data);
+        table.setPrefHeight(200);
+        
+        return table;
+    }
+    
+    private VBox createReturnForm() {
+        VBox form = new VBox(10);
+        form.setStyle("-fx-background-color: #f9fafb; -fx-padding: 15; -fx-border-color: #e5e7eb; -fx-border-radius: 5;");
+        
+        Label formTitle = new Label("Enregistrer le Retour");
+        formTitle.setFont(Font.font("System", FontWeight.BOLD, 14));
+        
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        
+        TextField idField = new TextField();
+        idField.setPromptText("Ex: E001");
+        Label idLabel = new Label("ID Emprunt :");
+        idLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
+        
+        DatePicker datePicker = new DatePicker();
+        Label dateLabel = new Label("Date de retour :");
+        dateLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
+        
+        grid.add(idLabel, 0, 0);
+        grid.add(idField, 0, 1);
+        grid.add(dateLabel, 1, 0);
+        grid.add(datePicker, 1, 1);
+        
+        TextArea notesArea = new TextArea();
+        notesArea.setPromptText("Remarques sur l'état du document...");
+        notesArea.setPrefRowCount(3);
+        Label notesLabel = new Label("Notes :");
+        notesLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
+        
+        form.getChildren().addAll(formTitle, grid, notesLabel, notesArea);
+        return form;
+    }
+    
+    // ==================== ALERTS TAB ====================
+    private Tab createAlertsTab() {
+        Tab tab = new Tab("Alertes & Retards");
+        
+        VBox content = new VBox(15);
+        content.setPadding(new Insets(20));
+        
+        Label titreLabel = new Label("Alertes et Retards");
+        titreLabel.setFont(Font.font("System", FontWeight.BOLD, 20));
+        
+        GridPane stats = new GridPane();
+        stats.setHgap(15);
+        stats.setVgap(15);
+        
+        stats.add(createStatBox("", "Emprunts en Retard", "5", "lightsalmon"), 0, 0);
+        stats.add(createStatBox("", "Pénalités à Collecter", "45,50 €", "#fef3c7"), 1, 0);
+        stats.add(createStatBox("", "Emprunts Actifs", "32", "#d1fae5"), 2, 0);
+        stats.add(createStatBox("", "Disponibles", "128", "azure"), 3, 0);
+        
+        HBox filterBar = new HBox(10);
+        filterBar.setStyle("-fx-background-color: #f9fafb; -fx-padding: 10; -fx-border-color: #e5e7eb;");
+        ComboBox<String> filterBox = new ComboBox<>();
+        filterBox.getItems().addAll("Tous", "1-5 jours", "5-10 jours", "Plus de 10 jours");
+        filterBox.setValue("Tous");
+        Button exportBtn = new Button("Exporter PDF");
+        exportBtn.setStyle("-fx-background-color: #4b5563; -fx-text-fill: white;");
+        filterBar.getChildren().addAll(new Label("Filtrer par :"), filterBox, exportBtn);
+        
+        TableView<LateItem> table = createLateItemsTable();
+        
+        content.getChildren().addAll(titreLabel, stats, filterBar, table);
+        
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        tab.setContent(scrollPane);
+        
+        return tab;
+    }
+    
+    private VBox createStatBox(String icon, String label, String value, String bgColor) {
+        VBox box = new VBox(5);
+        box.setStyle("-fx-background-color: " + bgColor + "; -fx-padding: 20; -fx-border-radius: 5;");
+        box.setPrefWidth(250);
+        
+        Label iconLabel = new Label(icon);
+        iconLabel.setFont(Font.font(30));
+        
+        Label textLabel = new Label(label);
+        textLabel.setFont(Font.font("System", 12));
+        
+        Label valueLabel = new Label(value);
+        valueLabel.setFont(Font.font("System", FontWeight.BOLD, 24));
+        
+        box.getChildren().addAll(iconLabel, textLabel, valueLabel);
+        return box;
+    }
+    
+    private TableView<LateItem> createLateItemsTable() {
+        TableView<LateItem> table = new TableView<>();
+        table.setStyle("-fx-background-color: white;");
+        
+        TableColumn<LateItem, String> memberCol = new TableColumn<>("Adhérent");
+        memberCol.setCellValueFactory(new PropertyValueFactory<>("member"));
+        memberCol.setPrefWidth(150);
+        
+        TableColumn<LateItem, String> docCol = new TableColumn<>("Document");
+        docCol.setCellValueFactory(new PropertyValueFactory<>("document"));
+        docCol.setPrefWidth(200);
+        
+        TableColumn<LateItem, String> dueDateCol = new TableColumn<>("Date Retour Prévue");
+        dueDateCol.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
+        dueDateCol.setPrefWidth(150);
+        
+        TableColumn<LateItem, Integer> daysLateCol = new TableColumn<>("Jours de Retard");
+        daysLateCol.setCellValueFactory(new PropertyValueFactory<>("daysLate"));
+        daysLateCol.setPrefWidth(120);
+        
+        TableColumn<LateItem, String> penaltyCol = new TableColumn<>("Pénalité");
+        penaltyCol.setCellValueFactory(new PropertyValueFactory<>("penalty"));
+        penaltyCol.setPrefWidth(100);
+        
+        table.getColumns().addAll(Arrays.asList(memberCol, docCol, dueDateCol, daysLateCol, penaltyCol));
+        
+        ObservableList<LateItem> data = FXCollections.observableArrayList(
+            new LateItem("Pierre Bernard", "Les Misérables", "2024-11-01", 12, "6,00 €"),
+            new LateItem("Sophie Leclerc", "Magazine Science", "2024-11-05", 8, "4,00 €")
+        );
+        table.setItems(data);
+        table.setPrefHeight(300);
+        
+        return table;
+    }
+    
+    // ==================== HELPER METHODS ====================
+    private VBox creerRechercheBox(String[] options, String placeholder) {
+        VBox searchBox = new VBox(10);
+        searchBox.setStyle("-fx-background-color: #f9fafb; -fx-padding: 15; -fx-border-color: #e5e7eb; -fx-border-radius: 5;");
+        
+        HBox searchBar = new HBox(10);
+        searchBar.setAlignment(Pos.CENTER_LEFT);
+        
+        ComboBox<String> searchType = new ComboBox<>();
+        searchType.getItems().addAll(options);
+        searchType.setValue(options[0]);
+        searchType.setPrefWidth(150);
+        
+        TextField searchField = new TextField();
+        searchField.setPromptText(placeholder);
+        searchField.setPrefWidth(300);
+        
+        Button searchBtn = new Button("Rechercher");
+        searchBtn.setStyle("-fx-background-color: MIDNIGHTBLUE; -fx-text-fill: white; -fx-font-weight: bold;");
+        
+        searchBar.getChildren().addAll(new Label("Rechercher par :"), searchType, new Label("Texte :"), searchField, searchBtn);
+        searchBox.getChildren().add(searchBar);
+        
+        return searchBox;
+    }
+    
+    private VBox createInfoLabel(String label, String value) {
+        VBox box = new VBox(5);
+        Label labelText = new Label(label);
+        labelText.setFont(Font.font("System", 10));
+        labelText.setTextFill(Color.GRAY);
+        
+        Label valueText = new Label(value);
+        valueText.setFont(Font.font("System", FontWeight.BOLD, 14));
+        
+        box.getChildren().addAll(labelText, valueText);
+        return box;
+    }
+    
+    private String getStylesheet() {
+        return "data:text/css," +
+            ".tab-pane { -fx-background-color: white; }" +
+            ".tab { -fx-background-color: #e5e7eb; -fx-padding: 10 20 10 20; }" +
+            ".tab:selected { -fx-background-color: MIDNIGHTBLUE; -fx-text-fill: white; }" +
+            ".table-view { -fx-background-color: white; }" +
+            ".table-view .column-entete { -fx-background-color: MIDNIGHTBLUE; -fx-text-fill: white; }" +
+            ".button { -fx-cursor: hand; -fx-padding: 8 15 8 15; -fx-border-radius: 5; -fx-background-radius: 5; }";
+    }
+    
+    // ==================== DATA CLASSES ====================
+    public static class Document {
+        private String title;
+        private String author;
+        private String type;
+        private String isbn;
+        private String status;
+        
+        public Document(String title, String author, String type, String isbn, String status) {
+            this.title = title;
+            this.author = author;
+            this.type = type;
+            this.isbn = isbn;
+            this.status = status;
+        }
+        
+        public String getTitle() { return title; }
+        public String getAuthor() { return author; }
+        public String getType() { return type; }
+        public String getIsbn() { return isbn; }
+        public String getStatus() { return status; }
+    }
+    
+    public static class Member {
+        private String id;
+        private String lastName;
+        private String firstName;
+        private String contact;
+        private String penalty;
+        
+        public Member(String id, String lastName, String firstName, String contact, String penalty) {
+            this.id = id;
+            this.lastName = lastName;
+            this.firstName = firstName;
+            this.contact = contact;
+            this.penalty = penalty;
+        }
+        
+        public String getId() { return id; }
+        public String getLastName() { return lastName; }
+        public String getFirstName() { return firstName; }
+        public String getContact() { return contact; }
+        public String getPenalty() { return penalty; }
+    }
+    
+    public static class Borrowing {
+        private String id;
+        private String document;
+        private String member;
+        private String borrowDate;
+        private String dueDate;
+        
+        public Borrowing(String id, String document, String member, String borrowDate, String dueDate) {
+            this.id = id;
+            this.document = document;
+            this.member = member;
+            this.borrowDate = borrowDate;
+            this.dueDate = dueDate;
+        }
+        
+        public String getId() { return id; }
+        public String getDocument() { return document; }
+        public String getMember() { return member; }
+        public String getBorrowDate() { return borrowDate; }
+        public String getDueDate() { return dueDate; }
+    }
+    
+    public static class LateItem {
+        private String member;
+        private String document;
+        private String dueDate;
+        private int daysLate;
+        private String penalty;
+        
+        public LateItem(String member, String document, String dueDate, int daysLate, String penalty) {
+            this.member = member;
+            this.document = document;
+            this.dueDate = dueDate;
+            this.daysLate = daysLate;
+            this.penalty = penalty;
+        }
+        
+        public String getMember() { return member; }
+        public String getDocument() { return document; }
+        public String getDueDate() { return dueDate; }
+        public int getDaysLate() { return daysLate; }
+        public String getPenalty() { return penalty; }
+    }
+    
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
