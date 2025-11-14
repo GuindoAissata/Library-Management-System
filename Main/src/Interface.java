@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+import Model.*;
 
 public class Interface extends Application {
 
@@ -40,8 +42,8 @@ public class Interface extends Application {
             creerPageDocuments(),
             createMembersTab(),
             createBorrowTab(),
-            createReturnTab(),
-            createAlertsTab()
+            createReturnTab()
+            //createAlertsTab()
         );
         
         layoutPrincipal.setCenter(tabPane);
@@ -91,9 +93,9 @@ public class Interface extends Application {
         TableView<Document> table = creerTabVueDocuments();
         
         // Add document form
-        VBox addForm = creerFormAjoutDocument();
+        VBox ajoutForm = creerFormAjoutDocument();
         
-        content.getChildren().addAll(titreLabel, rechercheBox, table, addForm);
+        content.getChildren().addAll(titreLabel, rechercheBox, table, ajoutForm);
         
         ScrollPane scrollPane = new ScrollPane(content);
         scrollPane.setFitToWidth(true);
@@ -105,25 +107,40 @@ public class Interface extends Application {
     private TableView<Document> creerTabVueDocuments() {
         TableView<Document> table = new TableView<>();
         
+        TableColumn<Document, String> idCol = new TableColumn<>("ID");
+        idCol.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getidDoc())));
+        idCol.setPrefWidth(150);
+        
         TableColumn<Document, String> titreCol = new TableColumn<>("Titre");
-        titreCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+        titreCol.setCellValueFactory(cellData -> new SimpleStringProperty((cellData.getValue().getTitre())));
         titreCol.setPrefWidth(250);
         
         TableColumn<Document, String> authorCol = new TableColumn<>("Auteur");
-        authorCol.setCellValueFactory(new PropertyValueFactory<>("author"));
+        authorCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getAuteur()));
         authorCol.setPrefWidth(200);
+
+        TableColumn<Document, String> editorCol = new TableColumn<>("Editeur");
+        editorCol.setCellValueFactory(new PropertyValueFactory<>("editeur"));
+        editorCol.setPrefWidth(200);
         
         TableColumn<Document, String> typeCol = new TableColumn<>("Type");
-        typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
+        typeCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getType()));
         typeCol.setPrefWidth(100);
+
         
-        TableColumn<Document, String> isbnCol = new TableColumn<>("ISBN/ID");
-        isbnCol.setCellValueFactory(new PropertyValueFactory<>("isbn"));
-        isbnCol.setPrefWidth(150);
+        
+        TableColumn<Document, String> isbn_issnCol = new TableColumn<>("ISBN/ISSN");
+        isbn_issnCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getISBN_ISSN()));
+        isbn_issnCol.setPrefWidth(150);
         
         TableColumn<Document, String> statusCol = new TableColumn<>("Statut");
-        statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+        statusCol.setCellValueFactory(cellData -> {
+            boolean estDispo = cellData.getValue().getEstDisponible();
+            String texte = estDispo ? "Disponible" : "Emprunté";
+            return new SimpleStringProperty(texte);
+        });
         statusCol.setPrefWidth(120);
+
         
         TableColumn<Document, Void> actionsCol = new TableColumn<>("Actions");
         actionsCol.setPrefWidth(150);
@@ -134,7 +151,7 @@ public class Interface extends Application {
             
             {
                 modifierBtn.setStyle("-fx-background-color: azure; -fx-text-fill: MIDNIGHTBLUE;");
-                supprimerBtn.setStyle("-fx-background-color: lightsalmon; -fx-text-fill: crimson;");
+                supprimerBtn.setStyle("-fx-background-color: pink; -fx-text-fill: RED;");
                 pane.setAlignment(Pos.CENTER);
             }
             
@@ -145,14 +162,14 @@ public class Interface extends Application {
             }
         });
         
-        table.getColumns().addAll(Arrays.asList(titreCol, authorCol, typeCol, isbnCol, statusCol, actionsCol));
+        table.getColumns().addAll(Arrays.asList(idCol, titreCol, authorCol, editorCol, typeCol, isbn_issnCol, statusCol, actionsCol));
         
         // Sample data
         ObservableList<Document> data = FXCollections.observableArrayList(
-            new Document("Le Seigneur des Anneaux", "J.R.R. Tolkien", "Livre", "978-2-253-11235-1", "Disponible"),
-            new Document("Les Misérables", "Victor Hugo", "Livre", "978-2-07-036343-8", "Emprunté"),
-            new Document("Science & Vie", "Collectif", "Magazine", "SV-2024-11", "Disponible"),
-            new Document("Python Avancé", "Guido van Rossum", "Livre", "978-2-412-08934-1", "Disponible")
+            new Livre("Le Seigneur des Anneaux", "J.R.R. Tolkien", "Edit", "978-2-253-11235-1", 300),
+            new Livre("Les Misérables", "Victor Hugo", "Edit", "978-2-07-036343-8", 700),
+            new Magazine("Science & Vie", "Collectif", 5, "Mensuel", "SV-2024-11"),
+            new Livre("Python Avancé", "Guido van Rossum", "Edit", "978-2-412-08934-1", 400)
         );
         table.setItems(data);
         table.setPrefHeight(300);
@@ -176,9 +193,12 @@ public class Interface extends Application {
         
         TextField authorField = new TextField();
         authorField.setPromptText("Auteur");
+
+        TextField editorField = new TextField();
+        editorField.setPromptText("Editeur");
         
         ComboBox<String> typeBox = new ComboBox<>();
-        typeBox.getItems().addAll("Livre", "Magazine", "CD", "DVD");
+        typeBox.getItems().addAll("Livre", "Magazine");
         typeBox.setPromptText("Sélectionner type");
         
         TextField isbnField = new TextField();
@@ -186,11 +206,12 @@ public class Interface extends Application {
         
         grid.add(titleField, 0, 0);
         grid.add(authorField, 1, 0);
-        grid.add(typeBox, 2, 0);
-        grid.add(isbnField, 3, 0);
+        grid.add(editorField,2,0);
+        grid.add(typeBox, 3, 0);
+        grid.add(isbnField, 4, 0);
         
         Button addBtn = new Button("Ajouter le document");
-        addBtn.setStyle("-fx-background-color: #16a34a; -fx-text-fill: white; -fx-font-weight: bold;");
+        addBtn.setStyle("-fx-background-color: green; -fx-text-fill: white; -fx-font-weight: bold;");
         
         form.getChildren().addAll(formTitle, grid, addBtn);
         return form;
@@ -211,10 +232,10 @@ public class Interface extends Application {
             "Entrez le nom ou l'ID..."
         );
         
-        TableView<Member> table = createMembersTable();
-        VBox addForm = createAddMemberForm();
+        TableView<Adherent> table = createMembersTable();
+        VBox ajoutForm = createAddMemberForm();
         
-        content.getChildren().addAll(titreLabel, searchBox, table, addForm);
+        content.getChildren().addAll(titreLabel, searchBox, table, ajoutForm);
         
         ScrollPane scrollPane = new ScrollPane(content);
         scrollPane.setFitToWidth(true);
@@ -223,30 +244,34 @@ public class Interface extends Application {
         return tab;
     }
     
-    private TableView<Member> createMembersTable() {
-        TableView<Member> table = new TableView<>();
+    private TableView<Adherent> createMembersTable() {
+        TableView<Adherent> table = new TableView<>();
         
-        TableColumn<Member, String> idCol = new TableColumn<>("ID Adhérent");
-        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        TableColumn<Adherent, String> idCol = new TableColumn<>("ID Adhérent");
+        idCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getIdAdherent()));
         idCol.setPrefWidth(120);
         
-        TableColumn<Member, String> lastNameCol = new TableColumn<>("Nom");
-        lastNameCol.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        TableColumn<Adherent, String> lastNameCol = new TableColumn<>("Nom");
+        lastNameCol.setCellValueFactory(new PropertyValueFactory<>("nom"));
         lastNameCol.setPrefWidth(150);
         
-        TableColumn<Member, String> firstNameCol = new TableColumn<>("Prénom");
-        firstNameCol.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        TableColumn<Adherent, String> firstNameCol = new TableColumn<>("Prénom");
+        firstNameCol.setCellValueFactory(new PropertyValueFactory<>("prenom"));
         firstNameCol.setPrefWidth(150);
         
-        TableColumn<Member, String> contactCol = new TableColumn<>("Contact");
+        TableColumn<Adherent, String> mailCol = new TableColumn<>("Adresse mail");
+        mailCol.setCellValueFactory(new PropertyValueFactory<>("mail"));
+        mailCol.setPrefWidth(150);
+
+        TableColumn<Adherent, String> contactCol = new TableColumn<>("Contact");
         contactCol.setCellValueFactory(new PropertyValueFactory<>("contact"));
         contactCol.setPrefWidth(200);
         
-        TableColumn<Member, String> penaltyCol = new TableColumn<>("Statut Pénalité");
-        penaltyCol.setCellValueFactory(new PropertyValueFactory<>("penalty"));
+        TableColumn<Adherent, String> penaltyCol = new TableColumn<>("Pénalité");
+        penaltyCol.setCellValueFactory(new PropertyValueFactory<>("penalite"));
         penaltyCol.setPrefWidth(150);
         
-        TableColumn<Member, Void> actionsCol = new TableColumn<>("Actions");
+        TableColumn<Adherent, Void> actionsCol = new TableColumn<>("Actions");
         actionsCol.setPrefWidth(200);
         actionsCol.setCellFactory(col -> new TableCell<>() {
             private final Button historyBtn = new Button("Historique");
@@ -266,12 +291,12 @@ public class Interface extends Application {
             }
         });
         
-        table.getColumns().addAll(Arrays.asList(idCol, lastNameCol, firstNameCol, contactCol, penaltyCol, actionsCol));
+        table.getColumns().addAll(Arrays.asList(idCol, lastNameCol, firstNameCol, mailCol, contactCol, penaltyCol, actionsCol));
         
-        ObservableList<Member> data = FXCollections.observableArrayList(
-            new Member("A001", "Dupont", "Jean", "jean@example.com", "Aucune"),
-            new Member("A002", "Martin", "Marie", "marie@example.com", "Aucune"),
-            new Member("A003", "Bernard", "Pierre", "pierre@example.com", "2 jours de retard")
+        ObservableList<Adherent> data = FXCollections.observableArrayList(
+            new Adherent("Dupont", "Jean", "jean@example.com", "0102030405"),
+            new Adherent("Martin", "Marie", "marie@example.com", "0000000000"),
+            new Adherent("Bernard", "Pierre", "pierre@example.com", "0101010101")
         );
         table.setItems(data);
         table.setPrefHeight(300);
@@ -396,8 +421,9 @@ public class Interface extends Application {
         
         info.add(createInfoLabel("Titre :", "-"), 0, 0);
         info.add(createInfoLabel("Auteur :", "-"), 1, 0);
-        info.add(createInfoLabel("Type :", "-"), 2, 0);
-        info.add(createInfoLabel("Statut :", "Disponible"), 3, 0);
+        info.add(createInfoLabel("Editeur :", "-"), 2, 0);
+        info.add(createInfoLabel("Type :", "-"), 3, 0);
+        info.add(createInfoLabel("Statut :", "Disponible"), 4, 0);
         
         section.getChildren().addAll(title, searchBar, info);
         return section;
@@ -441,7 +467,7 @@ public class Interface extends Application {
         searchBtn.setStyle("-fx-background-color: MIDNIGHTBLUE; -fx-text-fill: white;");
         searchBar.getChildren().addAll(searchField, searchBtn);
         
-        TableView<Borrowing> table = createBorrowingsTable();
+        TableView<Emprunt> table = createBorrowingsTable();
         VBox returnForm = createReturnForm();
         
         VBox penaltyBox = new VBox(5);
@@ -472,32 +498,35 @@ public class Interface extends Application {
         return tab;
     }
     
-    private TableView<Borrowing> createBorrowingsTable() {
-        TableView<Borrowing> table = new TableView<>();
+    private TableView<Emprunt> createBorrowingsTable() {
+        TableView<Emprunt> table = new TableView<>();
         
-        TableColumn<Borrowing, String> idCol = new TableColumn<>("ID Emprunt");
-        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        TableColumn<Emprunt, String> idCol = new TableColumn<>("ID Emprunt");
+        idCol.setCellValueFactory(new PropertyValueFactory<>("ID_Emprunt"));
         
-        TableColumn<Borrowing, String> docCol = new TableColumn<>("Document");
-        docCol.setCellValueFactory(new PropertyValueFactory<>("document"));
+        TableColumn<Emprunt, String> docCol = new TableColumn<>("Document");
+        docCol.setCellValueFactory(new PropertyValueFactory<>("Document"));
         docCol.setPrefWidth(200);
         
-        TableColumn<Borrowing, String> memberCol = new TableColumn<>("Adhérent");
-        memberCol.setCellValueFactory(new PropertyValueFactory<>("member"));
+        TableColumn<Emprunt, String> memberCol = new TableColumn<>("Adhérent");
+        memberCol.setCellValueFactory(new PropertyValueFactory<>("Adherent"));
         memberCol.setPrefWidth(150);
         
-        TableColumn<Borrowing, String> borrowDateCol = new TableColumn<>("Date Emprunt");
-        borrowDateCol.setCellValueFactory(new PropertyValueFactory<>("borrowDate"));
+        TableColumn<Emprunt, String> borrowDateCol = new TableColumn<>("Date Emprunt");
+        borrowDateCol.setCellValueFactory(new PropertyValueFactory<>("Date_Emprunt"));
         
-        TableColumn<Borrowing, String> dueDateCol = new TableColumn<>("Date Retour Prévue");
-        dueDateCol.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
+        TableColumn<Emprunt, String> dueDateCol = new TableColumn<>("Date Retour Prévue");
+        dueDateCol.setCellValueFactory(new PropertyValueFactory<>("Date_RetourPrevue"));
+
+        TableColumn<Emprunt, String> realDateCol = new TableColumn<>("Date Retour Réelle");
+        realDateCol.setCellValueFactory(new PropertyValueFactory<>("Date_RetourReelle"));
+
         
         table.getColumns().addAll(Arrays.asList(idCol, docCol, memberCol, borrowDateCol, dueDateCol));
         
-        ObservableList<Borrowing> data = FXCollections.observableArrayList(
-            new Borrowing("E001", "Le Seigneur des Anneaux", "Jean Dupont", "2024-10-15", "2024-11-05"),
-            new Borrowing("E002", "Python Avancé", "Marie Martin", "2024-10-20", "2024-11-10")
-        );
+        ObservableList<Emprunt> data = FXCollections.observableArrayList(
+            new Emprunt(new Adherent("PHI", "Nono", "nophi@dauphine.eu", "0202020202"), new Livre("Mon livre", "Moi", "Toi", "ISBN-qqc",200)
+        ));
         table.setItems(data);
         table.setPrefHeight(200);
         
@@ -540,6 +569,7 @@ public class Interface extends Application {
     }
     
     // ==================== ALERTS TAB ====================
+    /*
     private Tab createAlertsTab() {
         Tab tab = new Tab("Alertes & Retards");
         
@@ -631,6 +661,7 @@ public class Interface extends Application {
         
         return table;
     }
+        */
     
     // ==================== HELPER METHODS ====================
     private VBox creerRechercheBox(String[] options, String placeholder) {
@@ -682,58 +713,16 @@ public class Interface extends Application {
     }
     
     // ==================== DATA CLASSES ====================
-    public static class Document {
-        private String title;
-        private String author;
-        private String type;
-        private String isbn;
-        private String status;
-        
-        public Document(String title, String author, String type, String isbn, String status) {
-            this.title = title;
-            this.author = author;
-            this.type = type;
-            this.isbn = isbn;
-            this.status = status;
-        }
-        
-        public String getTitle() { return title; }
-        public String getAuthor() { return author; }
-        public String getType() { return type; }
-        public String getIsbn() { return isbn; }
-        public String getStatus() { return status; }
-    }
+    /*
     
-    public static class Member {
-        private String id;
-        private String lastName;
-        private String firstName;
-        private String contact;
-        private String penalty;
-        
-        public Member(String id, String lastName, String firstName, String contact, String penalty) {
-            this.id = id;
-            this.lastName = lastName;
-            this.firstName = firstName;
-            this.contact = contact;
-            this.penalty = penalty;
-        }
-        
-        public String getId() { return id; }
-        public String getLastName() { return lastName; }
-        public String getFirstName() { return firstName; }
-        public String getContact() { return contact; }
-        public String getPenalty() { return penalty; }
-    }
-    
-    public static class Borrowing {
+    public static class Emprunt {
         private String id;
         private String document;
         private String member;
         private String borrowDate;
         private String dueDate;
         
-        public Borrowing(String id, String document, String member, String borrowDate, String dueDate) {
+        public Emprunt(String id, String document, String member, String borrowDate, String dueDate) {
             this.id = id;
             this.document = document;
             this.member = member;
@@ -770,6 +759,7 @@ public class Interface extends Application {
         public String getPenalty() { return penalty; }
     }
     
+    */
     public static void main(String[] args) {
         launch(args);
     }
