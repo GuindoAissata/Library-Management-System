@@ -26,9 +26,11 @@ public class Livre extends Document {
      * 
      */
      //////////////getter////////
+    @Override
     public String getAuteur(){return auteur;}
     public int getNombre_page(){return  Nombre_page;}
-    public String getISBN(){return ISBN;}
+    @Override
+    public String getISBN_ISSN(){return ISBN;}
     
     /////////   Setter////////
     public void setAuteur(String a){auteur = a;}
