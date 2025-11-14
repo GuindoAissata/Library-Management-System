@@ -27,6 +27,8 @@ public abstract class Document {
      * 
      */
   
+    private static int compteur = 0; // compteur global
+
     private Boolean EstDisponible;
 
     /**
@@ -41,6 +43,7 @@ public abstract class Document {
 
     ////////////////Constructeur///////////////
     public Document(String titre, String editeur) {
+        this.idDoc = compteur++;
         this.titre = titre;
         this.editeur = editeur; 
         //this.idDoc = idDoc;
@@ -48,10 +51,22 @@ public abstract class Document {
         }
     ////////// Getter ////////////////
     
-    public String getitre(){return titre;}
+    public String getTitre(){return titre;}
     public String getEditeur(){return editeur;}
     public int getidDoc(){return idDoc;}
     public Boolean getEstDisponible(){return EstDisponible;}
+
+    // A redéfinir dans Livre, pas dans Magazine (getter qui permet d'afficher plus proprement dans l'interface)
+    public String getAuteur() {
+    return "----------"; // Document normal n’a pas d’auteur, Livre a un auteur, Magazine n'a pas d'auteur
+    }
+
+    // A redéfinir dans Livre / Magazine
+    public String getISBN_ISSN() {
+        return ""; 
+    }
+
+
     
     /////////Setter ////////////////
     
