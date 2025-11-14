@@ -67,6 +67,8 @@ public class Emprunt {
 
 ///////////////getter////////////////
     public Long getID_Emprunt(){  return ID_Emprunt;}
+    public Document getDocument(){ return Document;}
+    public Adherent getAdherent(){ return Adherent;}
     public LocalDate getDate_Emprunt(){ return Date_Emprunt;}
     public LocalDate getDate_RetourPrevue(){return Date_RetourPrevue; }
     public LocalDate getDate_RetourReelle(){return Date_RetourReelle;}
