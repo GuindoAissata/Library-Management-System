@@ -34,7 +34,7 @@ public abstract class Document {
     /**
      * 
      */
-    public Set<Emprunt> List_Emprunt;
+    public Set<Emprunt> List_Emprunt = new HashSet<>();
 
     /**
      * 
