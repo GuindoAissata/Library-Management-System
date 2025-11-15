@@ -61,7 +61,7 @@ public class BibliothequeManager {
     }
 
 
-   /////////////Enregistrer unn Emprunt//////////////
+  /////////////Enregistrer unn Emprunt//////////////
     public LocalDate Enregistrer_Emprunt (Document document,Adherent adherent) throws ArgumentException{
         if (!document.getEstDisponible()) {
             throw new ArgumentException("Le document n'ets pas disponible"); 
@@ -89,9 +89,9 @@ public class BibliothequeManager {
             emprunt.setPenalite(penalite);//on met à jour la pénalité de l'emprunt
             emprunt.adherent.setPenalite(penalite);//Ajouter la pénalité à celle existante de l'adherent
         } 
-            emprunt.adherent.setNb_Emprunt_Encours();// on enlève 1 à son nbre d'emprunt en cours
+            emprunt.adherent.setNb_Emprunt_Encours();// on enlève 1 à son nbre d'emprunt en cours// il est incrémenté dans la méthode AddEmprunt dans Adherent
             emprunt.document.setEstDisponible(true);// On rend disponible le livre
-            emprunt.setStatut_Emprunt(false);// on met à false pour dire que l'emprunt n'est plus en cours 
+            emprunt.setStatut_Emprunt(false);// on met à false pour dire que l'emprunt n'est plus en cours // il est à true par défaut à la création d'un emprunt
         return true;
     }
 
