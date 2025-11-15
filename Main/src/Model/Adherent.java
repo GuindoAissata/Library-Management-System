@@ -105,7 +105,7 @@ public class Adherent {
     public String getNom(){ return nom;}
     public String getPrenom(){ return prenom;}
     public String getMail(){ return mail;}
-    public String getID(){ return ID_adherent;}
+    public String getID_Adherent(){ return ID_adherent;}
     public String getContact(){ return contact;}
     public Double getPenalite(){ return penalite;}
     public int getNb_Emprunt_Encours(){ return Nb_Emprunt_Encours;}
