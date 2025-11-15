@@ -248,7 +248,7 @@ public class Interface extends Application {
         TableView<Adherent> table = new TableView<>();
         
         TableColumn<Adherent, String> idCol = new TableColumn<>("ID Adhérent");
-        idCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getIdAdherent()));
+        idCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getID_Adherent()));
         idCol.setPrefWidth(120);
         
         TableColumn<Adherent, String> lastNameCol = new TableColumn<>("Nom");
