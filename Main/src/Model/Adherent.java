@@ -118,6 +118,7 @@ public class Adherent {
     public void setContact(String c){contact = c;}
     //private void setID(String id){ ID_adherent = id;}
     public void setPenalite( Double s){ penalite = s;}
+    public void setNb_Emprunt_Encours(){Nb_Emprunt_Encours -=1 ; } // A chaque retour on decremente le Nb_Emprunt_Encours 
 
     ////////////ToString///////////////
     public String toString(){
@@ -130,8 +131,6 @@ public class Adherent {
         List_Emprunt.add(e); Nb_Emprunt_Encours +=1;
     }
 
-    //// A chaque retour on decremente le Nb_Emprunt_Encours 
-    public void setNb_Emprunt_Encours(){Nb_Emprunt_Encours -=1 ; }
     @Override
     // redefinir la methode equals du set , pour lui dire que deux ensembles sont égales que si leur Mail sont pareil
     public boolean equals(Object o){
