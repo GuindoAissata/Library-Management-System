@@ -33,6 +33,8 @@ public class Emprunt {
      * 
      */
     private Boolean statut_Emprunt; // ajouter pour savoir si emprunt en cours ou non 
+    private Double penalite = 0.0; // car un emprunt doit avoir sa penalité aussi different de la pénalité de l'adhérent et c'est la penalité de l'emprunt qui s'ajoute à la penalité de l'adherent 
+    
     /**
      * 
      */
@@ -71,11 +73,13 @@ public class Emprunt {
     public LocalDate getDate_RetourPrevue(){return Date_RetourPrevue; }
     public LocalDate getDate_RetourReelle(){return Date_RetourReelle;}
     public Boolean getStatut_Emprunt(){return statut_Emprunt;}
+    public Double getPenalite(){return penalite;}
 
     ////////////////setter////////////////
     public void setID_Emprunt( Long id){ ID_Emprunt = id;}
     public void setDateRetourPrevu( LocalDate d){ Date_RetourPrevue = d;}
     public void setDateRetourRelle(LocalDate d){ Date_RetourReelle = d;}
     public void setStatut_Emprunt(Boolean s){ statut_Emprunt = s;}
+    public void setPenalite(Double p){penalite = p;}
 
 }
