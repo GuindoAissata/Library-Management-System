@@ -77,7 +77,8 @@ public class Adherent {
     String  partNom = nom.length() >= 4 ? nom.substring(0,4).toLowerCase() : nom.toLowerCase();
     // les  2 premières lettres du prenom
     String partPrenom = prenom.length() >=2 ? prenom.substring(0,2).toLowerCase() : prenom.toLowerCase();
-    return partNom + partPrenom + compteur ; 
+    return partNom + partPrenom + compteur ;
+        compteur++;
     } 
 
      // Méthodes de validation
