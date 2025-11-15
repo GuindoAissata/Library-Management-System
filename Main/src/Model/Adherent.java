@@ -117,7 +117,7 @@ public class Adherent {
     public void setMail(String m){mail = m;}
     public void setContact(String c){contact = c;}
     //private void setID(String id){ ID_adherent = id;}
-    public void setPenalite( Double s){ penalite = s;}
+   public void setPenalite( Double s){ penalite += s;}// on doit ajouter la nouvelle penalité à celle existente
     public void setNb_Emprunt_Encours(){Nb_Emprunt_Encours -=1 ; } // A chaque retour on decremente le Nb_Emprunt_Encours 
 
     ////////////ToString///////////////
