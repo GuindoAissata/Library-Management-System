@@ -91,7 +91,7 @@ public class BibliothequeManager {
         } 
             emprunt.adherent.setNb_Emprunt_Encours();// on enlève 1 à son nbre d'emprunt en cours// il est incrémenté dans la méthode AddEmprunt dans Adherent
             emprunt.document.setEstDisponible(true);// On rend disponible le livre
-            emprunt.setStatut_Emprunt(false);// on met à false pour dire que l'emprunt n'est plus en cours // il est à true par défaut à la création d'un emprunt
+             emprunt.adherent.decrementeNb_Emprunt_Encours();// on enlève 1 à son nbre d'emprunt en cours// il est incrémenté dans la méthode AddEmprunt dans Adherent
         return true;
     }
 
