@@ -61,7 +61,7 @@ public class FenetrePopUp{
         supprimerBtn.setStyle("-fx-background-color: red; -fx-text-fill: white; -fx-padding: 10 30; -fx-font-size: 14; -fx-font-weight: bold;");
         supprimerBtn.setOnAction(e -> {
             // Supprimer l'élément de la table
-            table.getItems().remove(element);
+            //table.getItems().remove(element);
             //////////// RAJOUTER LES MANINUP COTE BDD JE CROIS
             /// ////////////////////
             /// ///////////////////////
