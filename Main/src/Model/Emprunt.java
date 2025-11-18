@@ -77,6 +77,7 @@ public class Emprunt {
 
     ////////////////setter////////////////
     public void setID_Emprunt( Long id){ ID_Emprunt = id;}
+    public void setDate_Emprunt( LocalDate d){ Date_Emprunt = d;}
     public void setDateRetourPrevu( LocalDate d){ Date_RetourPrevue = d;}
     public void setDateRetourRelle(LocalDate d){ Date_RetourReelle = d;}
     public void setStatut_Emprunt(Boolean s){ statut_Emprunt = s;}
