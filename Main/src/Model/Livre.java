@@ -13,7 +13,7 @@ public class Livre extends Document {
     /**
      * Default constructor
      */
-    public Livre(String titre, String auteur, String editeur, String ISBN, int Nombre_page) {
+    public Livre(String ISBN,String titre,String editeur,String auteur, int Nombre_page) {
         super(titre, editeur);
         this.auteur = auteur;
         this.ISBN = ISBN;
