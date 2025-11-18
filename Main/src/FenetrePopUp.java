@@ -392,6 +392,209 @@ public class FenetrePopUp{
         popupStage.showAndWait();
     }
 
+
+    public static void afficherPopupDetailEmprunt(Emprunt emprunt, TableView<Emprunt> table) {
+    
+    // Récupérer le document et l'adhérent depuis l'emprunt
+    Document doc = emprunt.getDocument();
+    Adherent adherent = emprunt.getAdherent();
+    
+    // Créer une nouvelle fenêtre (Stage)
+    Stage popupStage = new Stage();
+    popupStage.setTitle("Détails de l'emprunt");
+    popupStage.initModality(Modality.APPLICATION_MODAL);
+    
+    // Créer le layout principal avec ScrollPane
+    ScrollPane scrollPane = new ScrollPane();
+    VBox layout = new VBox(20);
+    layout.setPadding(new Insets(30));
+    layout.setAlignment(Pos.TOP_CENTER);
+    layout.setStyle("-fx-background-color: white;");
+    
+    // Titre principal
+    Label titleLabel = new Label("Détails de l'emprunt");
+    titleLabel.setFont(Font.font("System", FontWeight.BOLD, 24));
+    
+    // ========== SECTION ADHÉRENT ==========
+    VBox adherentSection = new VBox(10);
+    adherentSection.setStyle("-fx-background-color: white; -fx-padding: 20; -fx-border-radius: 10; -fx-background-radius: 10;");
+    
+    Label adherentTitle = new Label("Informations de l'adhérent");
+    adherentTitle.setFont(Font.font("System", FontWeight.BOLD, 18));
+    adherentTitle.setTextFill(Color.DARKBLUE);
+    
+    GridPane adherentGrid = new GridPane();
+    adherentGrid.setHgap(15);
+    adherentGrid.setVgap(10);
+    adherentGrid.setPadding(new Insets(10, 0, 0, 0));
+    
+    // Informations adhérent
+    ajouterLigneInfo(adherentGrid, 0, "ID :", String.valueOf(adherent.getID()));
+    ajouterLigneInfo(adherentGrid, 1, "Nom :", adherent.getNom());
+    ajouterLigneInfo(adherentGrid, 2, "Prénom :", adherent.getPrenom());
+    ajouterLigneInfo(adherentGrid, 3, "Email :", adherent.getMail());
+    ajouterLigneInfo(adherentGrid, 4, "Contact :", adherent.getContact());
+    ajouterLigneInfo(adherentGrid, 5, "Pénalité :", adherent.getPenalite() + " €");
+    ajouterLigneInfo(adherentGrid, 6, "Emprunts en cours :", String.valueOf(adherent.getNb_Emprunt_Encours()) + "/5");
+    
+    adherentSection.getChildren().addAll(adherentTitle, adherentGrid);
+    
+    // ========== SECTION DOCUMENT ==========
+    VBox documentSection = new VBox(10);
+    documentSection.setStyle("-fx-background-color: white; -fx-padding: 20; -fx-border-radius: 10; -fx-background-radius: 10;");
+    
+    Label documentTitle = new Label("Informations du document");
+    documentTitle.setFont(Font.font("System", FontWeight.BOLD, 18));
+    documentTitle.setTextFill(Color.DARKGOLDENROD);
+    
+    GridPane documentGrid = new GridPane();
+    documentGrid.setHgap(15);
+    documentGrid.setVgap(10);
+    documentGrid.setPadding(new Insets(10, 0, 0, 0));
+    
+    int row = 0;
+    ajouterLigneInfo(documentGrid, row++, "ID :", doc.getidDoc());
+    ajouterLigneInfo(documentGrid, row++, "Titre :", doc.getTitre());
+    
+    // Informations spécifiques selon le type de document
+    if (doc instanceof Livre) {
+        Livre livre = (Livre) doc;
+        ajouterLigneInfo(documentGrid, row++, "Type :", "Livre");
+        ajouterLigneInfo(documentGrid, row++, "Auteur :", livre.getAuteur());
+        ajouterLigneInfo(documentGrid, row++, "Éditeur :", livre.getEditeur());
+        ajouterLigneInfo(documentGrid, row++, "ISBN :", livre.getISBN_ISSN());
+        ajouterLigneInfo(documentGrid, row++, "Nombre de pages :", String.valueOf(livre.getNombre_page()));
+        
+    } else if (doc instanceof Magazine) {
+        Magazine magazine = (Magazine) doc;
+        ajouterLigneInfo(documentGrid, row++, "Type :", "Magazine");
+        ajouterLigneInfo(documentGrid, row++, "Éditeur :", magazine.getEditeur());
+        ajouterLigneInfo(documentGrid, row++, "ISSN :", magazine.getISBN_ISSN());
+        ajouterLigneInfo(documentGrid, row++, "Numéro :", String.valueOf(magazine.getNumero()));
+        ajouterLigneInfo(documentGrid, row++, "Périodicité :", magazine.getPeriodicite());
+    }
+    
+    ajouterLigneInfo(documentGrid, row++, "Statut :", doc.getEstDisponible() ? "Disponible" : "Emprunté");
+    
+    documentSection.getChildren().addAll(documentTitle, documentGrid);
+    
+    // ========== SECTION EMPRUNT ==========
+    VBox empruntSection = new VBox(10);
+    empruntSection.setStyle("-fx-background-color: white; -fx-padding: 20; -fx-border-radius: 10; -fx-background-radius: 10;");
+    
+    Label empruntTitle = new Label("Informations de l'emprunt");
+    empruntTitle.setFont(Font.font("System", FontWeight.BOLD, 18));
+    empruntTitle.setTextFill(Color.DARKGREEN);
+    
+    GridPane empruntGrid = new GridPane();
+    empruntGrid.setHgap(15);
+    empruntGrid.setVgap(10);
+    empruntGrid.setPadding(new Insets(10, 0, 0, 0));
+    
+    ajouterLigneInfo(empruntGrid, 0, "ID Emprunt :", String.valueOf(emprunt.getIdEmprunt()));
+    ajouterLigneInfo(empruntGrid, 1, "Date d'emprunt :", emprunt.getDate_Emprunt().toString());
+    ajouterLigneInfo(empruntGrid, 2, "Date de retour prévue :", emprunt.getDate_Retour_Prevue().toString());
+    
+    if (emprunt.getDate_Retour_Effective() != null) {
+        ajouterLigneInfo(empruntGrid, 3, "Date de retour effective :", emprunt.getDate_Retour_Effective().toString());
+    } else {
+        ajouterLigneInfo(empruntGrid, 3, "Date de retour effective :", "En cours d'emprunt");
+    }
+    
+    // Calculer les jours de retard si applicable
+    LocalDate aujourdhui = LocalDate.now();
+    LocalDate dateRetourPrevue = emprunt.getDate_Retour_Prevue();
+    
+    if (emprunt.getDate_Retour_Effective() == null && aujourdhui.isAfter(dateRetourPrevue)) {
+        long joursRetard = ChronoUnit.DAYS.between(dateRetourPrevue, aujourdhui);
+        Label retardLabel = new Label("RETARD : " + joursRetard + " jour(s)");
+        retardLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
+        retardLabel.setTextFill(Color.RED);
+        empruntGrid.add(retardLabel, 0, 4, 2, 1);
+    }
+    
+    empruntSection.getChildren().addAll(empruntTitle, empruntGrid);
+    
+    // ========== BOUTONS ==========
+    HBox buttonsBox = new HBox(15);
+    buttonsBox.setAlignment(Pos.CENTER);
+    buttonsBox.setPadding(new Insets(20, 0, 0, 0));
+    
+    Button fermerBtn = new Button("Fermer");
+    fermerBtn.setStyle("-fx-background-color: gray; -fx-text-fill: white; -fx-padding: 10 30; -fx-font-size: 14; -fx-font-weight: bold;");
+    fermerBtn.setOnAction(e -> popupStage.close());
+    
+    Button modifierBtn = new Button("Modifier");
+    modifierBtn.setStyle("-fx-background-color: #2563eb; -fx-text-fill: white; -fx-padding: 10 30; -fx-font-size: 14; -fx-font-weight: bold;");
+    modifierBtn.setOnAction(e -> {
+        popupStage.close();
+        afficherPopupModificationEmprunt(emprunt, table);
+    });
+    
+    Button supprimerBtn = new Button("Supprimer");
+    supprimerBtn.setStyle("-fx-background-color: red; -fx-text-fill: white; -fx-padding: 10 30; -fx-font-size: 14; -fx-font-weight: bold;");
+    supprimerBtn.setOnAction(e -> {
+        popupStage.close();
+        afficherPopupSuppression(
+            emprunt,
+            table,
+            "Voulez-vous vraiment supprimer cet emprunt ?",
+            (emp) -> EmpruntDAO.supprimerEmprunt(emp.getIdEmprunt())
+        );
+    });
+    
+    buttonsBox.getChildren().addAll(fermerBtn, modifierBtn, supprimerBtn);
+    
+    // Ajouter toutes les sections au layout
+    layout.getChildren().addAll(
+        titleLabel,
+        empruntSection,
+        adherentSection,
+        documentSection,
+        buttonsBox
+    );
+    
+    scrollPane.setContent(layout);
+    scrollPane.setFitToWidth(true);
+    
+    // Créer la scène
+    Scene scene = new Scene(scrollPane, 700, 800);
+    popupStage.setScene(scene);
+    popupStage.setResizable(true);
+    
+    // Afficher la popup
+    popupStage.showAndWait();
+}
+
+// ========== MÉTHODE HELPER POUR AJOUTER UNE LIGNE D'INFO ==========
+private static void ajouterLigneInfo(GridPane grid, int row, String label, String value) {
+    Label labelNode = new Label(label);
+    labelNode.setFont(Font.font("System", FontWeight.BOLD, 14));
+    
+    Label valueNode = new Label(value);
+    valueNode.setFont(Font.font("System", 14));
+    valueNode.setWrapText(true);
+    valueNode.setMaxWidth(400);
+    
+    grid.add(labelNode, 0, row);
+    grid.add(valueNode, 1, row);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
 // Méthode pour afficher un message de succès
 private static void afficherMessageSucces(String message) {
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
