@@ -1,4 +1,4 @@
-# **Projet de POA M1 2025-2026 :  “Système de Gestion des Emprunts de Bibliothèque (SGEB)**
+# **“Système de Gestion des Emprunts de Bibliothèque (SGEB)** Projet POO-Avancé M1 2025-2026 :: 
 
 
 ## **Présentation générale**
@@ -162,6 +162,7 @@ Un guide détaillé est disponible dans le fichier user.pdf
 
 ## **5 Licence **
 Projet scolaire - libre d'uilisation à des fins pédagogiques
+
 
 
 
