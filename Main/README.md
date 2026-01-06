@@ -1,4 +1,4 @@
-# **“Système de Gestion des Emprunts de Bibliothèque (SGEB)** Projet POO-Avancé M1 2025-2026 :: 
+# **“Système de Gestion des Emprunts de Bibliothèque (SGEB)** Projet POO-Avancé M1 2025-2026 :**
 
 
 ## **Présentation générale**
@@ -56,7 +56,7 @@ Ensuite créer les tables nécessaires :
 .read sql/shema.sql
 ```
 
-### **Identifiant et Mot de passee (OBLIGATOIRE)**
+### *Identifiant et Mot de passee (OBLIGATOIRE)*
 
 
 Avant de pouvoir utiliser l’application, **un identifiant et un mot de passe** doivent
@@ -71,12 +71,12 @@ Sans cet enregistrement, l’application ne pourra pas être utilisée.
 d’un projet scolaire).
 
 
-## **4. Lancement de l'application***
+## *4. Lancement de l'application*
 
 
 Tout d'abord, merci d'avoir téléchargé mon programme ! Pour pouvoir l'exécuter, c'est très simple. Vous avez trois options. Ouvrez un invite de commande (CMD) ou un terminal. 
 
-### ** Option 1 - Script de lancement(recommandé)**
+### * Option 1 - Script de lancement(recommandé)*
 
 Double cliquer  sur le fihcier run.bat qui lance automatiquement l'application
 
@@ -86,12 +86,12 @@ cd "C:\Projet Java M1\Gestion des Emprunts_Biblio"
 cmd /c run.bat
 
 
-### ** Option 2/ Lancer directement le jar**
+### * Option 2/ Lancer directement le jar*
 
 java --module-path ".\javafx-sdk-21.0.2\lib" --add-modules javafx.controls,javafx.fxml -cp ".;GestionBiblio.jar;lib\sqlite-jdbc-3.50.3.0.jar" App
 
 
-### ** Option 3/ Recompiler après modification du code(avancé) :**
+### * Option 3/ Recompiler après modification du code(avancé) :*
 
 Si vous modifiez le code source:
   Supprimer les ancinnes compilations
@@ -138,7 +138,7 @@ javac -encoding UTF-8 `
 
 
 
-### ** Option 4 / Placez-vous à la racine du projet**
+### * Option 4 / Placez-vous à la racine du projet*
 Ouvrez un invite de commande (CMD) ou un terminal. 
 
 Par exemple :
@@ -152,7 +152,7 @@ avec toutes les dépendances):
       chmod +x run.sh
       ./run.sh
 
- ##** 4 Utilisation**
+ ## * 4 Utilisation*
 Une fois l'application lancée:
 
 - Connectez-vous avec l'identifiant créé dans la base
@@ -161,8 +161,9 @@ Une fois l'application lancée:
 
 Un guide détaillé est disponible dans le fichier user.pdf
 
-## **5 Licence **
+## *5 Licence *
 Projet scolaire - libre d'uilisation à des fins pédagogiques
+
 
 
 
