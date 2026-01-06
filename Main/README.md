@@ -58,7 +58,7 @@ Ensuite créer les tables nécessaires :
 
 ### **Identifiant et Mot de passee (OBLIGATOIRE)**
 
----
+
 Avant de pouvoir utiliser l’application, **un identifiant et un mot de passe** doivent
 être insérés dans la table prévue pour l’authentification.
 
@@ -163,6 +163,7 @@ Un guide détaillé est disponible dans le fichier user.pdf
 
 ## **5 Licence **
 Projet scolaire - libre d'uilisation à des fins pédagogiques
+
 
 
 
