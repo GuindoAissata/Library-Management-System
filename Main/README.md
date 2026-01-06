@@ -138,7 +138,7 @@ javac -encoding UTF-8 `
 
 
 
-### ** Option 4 / Placez-vous à la racine du projet**
+### Option 4 / Placez-vous à la racine du projet
 Ouvrez un invite de commande (CMD) ou un terminal. 
 
 Par exemple :
@@ -152,7 +152,7 @@ avec toutes les dépendances):
       chmod +x run.sh
       ./run.sh
 
- ## ** 4 Utilisation**
+ ## 4 Utilisation
 Une fois l'application lancée:
 
 - Connectez-vous avec l'identifiant créé dans la base
@@ -161,8 +161,9 @@ Une fois l'application lancée:
 
 Un guide détaillé est disponible dans le fichier user.pdf
 
-## **5 Licence **
+## 5 Licence 
 Projet scolaire - libre d'uilisation à des fins pédagogiques
+
 
 
 
