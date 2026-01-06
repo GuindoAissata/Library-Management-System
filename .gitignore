@@ -1,0 +1,20 @@
+# === Base de données SQLite ===
+Database/*.db
+*.db
+*.sqlite
+*.sqlite3
+
+# === Java / build ===
+out/
+target/
+*.class
+*.jar
+
+# === Logs ===
+*.log
+
+# === OS / IDE ===
+.DS_Store
+.idea/
+*.iml
+.vscode/

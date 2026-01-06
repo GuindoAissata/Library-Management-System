@@ -1,0 +1,57 @@
+
+
+CREATE TABLE IF NOT EXISTS Adherent( 
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    ID_Adherent VARCHAR(20), 
+    Nom VARCHAR(40) NOT NULL,
+    Prenom VARCHAR(40) NOT NULL,
+    Mail VARCHAR(50) NOT NULL UNIQUE,
+    Contact VARCHAR(50) NOT NULL,
+    Penalite DECIMAL(15,2) NOT NULL DEFAULT 0,
+    Nb_Emprunt_Encours INTEGER NOT NULL DEFAULT 0
+);   
+
+CREATE TABLE IF NOT EXISTS Document(
+    ID_Doc INTEGER PRIMARY KEY AUTOINCREMENT,
+    Titre VARCHAR(50) NOT NULL,
+    Editeur VARCHAR(50) NOT NULL,
+    Est_Disponible LOGICAL NOT NULL DEFAULT 1,
+    Supprime INTEGER  DEFAULT 0,
+    Type_doc  VARCHAR(50) CHECK(Type_doc IN ('Livre','Magazine')) NOT NULL
+);  
+
+CREATE TABLE IF NOT EXISTS Livre(
+    Id_livre INTEGER PRIMARY KEY,
+    ISBN VARCHAR(50) NOT NULL,
+    Nombre_page INTEGER NOT NULL,
+    Auteur VARCHAR(50) NOT NULL,
+    FOREIGN KEY(Id_livre) REFERENCES Document(ID_Doc)
+);  
+
+CREATE TABLE IF NOT EXISTS Magazine(
+    Id_magazine INTEGER PRIMARY KEY,
+    ISSN VARCHAR(50) NOT NULL,
+    Numero INTEGER NOT NULL,
+    Periodicite VARCHAR(50) NOT NULL,
+    FOREIGN KEY(Id_magazine) REFERENCES Document(ID_Doc)
+);
+
+CREATE TABLE IF NOT EXISTS Emprunt(
+    ID_Emprunt INTEGER PRIMARY KEY,
+    Date_Emprunt DATE NOT NULL,
+    Date_RetourPrevue DATE NOT NULL,
+    Date_RetourReelle DATE,
+    Statut_Emprunt LOGICAL NOT NULL,
+    Penalite  DECIMAL(5,2) DEFAULT 0,
+    ID_Doc INTEGER NOT NULL,
+    ID INTEGER NOT NULL,
+    FOREIGN KEY(ID_Doc) REFERENCES Document(ID_Doc),
+    FOREIGN KEY(ID) REFERENCES Adherent(ID)
+);
+
+CREATE TABLE Gestionnaire (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Login TEXT NOT NULL,
+    MotDePasse TEXT NOT NULL
+);
+
