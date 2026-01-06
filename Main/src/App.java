@@ -1,23 +1,25 @@
 import Model.Adherent;
 import Model.BibliothequeManager;
+import Model.Document;
 import Model.Emprunt;
 import Model.Livre;
+import Model.Magazine;
+import Vue.Interface;
+import Vue.LoginApp;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
+
 
 public class App {
+
     public static void main(String[] args) throws Exception {
-        System.out.println("Hello, World!");
-        Adherent personne1 = new Adherent("Guindo", "Aissata", "aissataguindo@dauphine.eu","060606");
-        Livre livre1 = new Livre("Alice au pays des merveille", "Lewis Carrol","editeur", "fdfef",192);
-        Emprunt emp1 = new Emprunt(personne1, livre1);
-        personne1.AddEmpruntAdherent(emp1);
-        personne1.AddEmpruntAdherent(emp1);
-        personne1.setNb_Emprunt_Encours();
-        BibliothequeManager b = new BibliothequeManager();
-        b.AddAdherent(personne1);
-        System.out.println( b.toString() + " N: B" +personne1.getNb_Emprunt_Encours());
-        personne1.setNom("Oumou");
-        System.out.println( b.toString() + " N: B" +personne1.getNb_Emprunt_Encours());
+        System.out.println("=== VERSION 2 ===");
 
-    }
+        //Interface.launch(Interface.class, args);
+        LoginApp.launch(LoginApp.class,args);
+    
+    
 }
-
+}
