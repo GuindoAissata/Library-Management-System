@@ -24,11 +24,10 @@ public class Magazine extends Document {
      * 
      */
      //////////////getter////////
-    @Override
-    public String getISBN_ISSN(){return  ISSN;}
     public int getNumero(){return numero;}
     public String getPeriodicite(){return periodicite;}
-
+    @Override
+    public String getISBN_ISSN(){return  ISSN;}
     
     /////////   Setter////////
     public void setISSN(String n ){  ISSN = n;}
